@@ -1,0 +1,140 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Black Friday Python Scrapper.ipynb",
+      "provenance": [],
+      "collapsed_sections": [],
+      "authorship_tag": "ABX9TyPYkji1Z5pf8V3Id8dnEeR8"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "15r4aKt_fSC7"
+      },
+      "source": [
+        "#Building a python scrapper that tracks amazon prices"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "MRpJb3Obf0S9"
+      },
+      "source": [
+        "!pip install requests_html"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "o4tE0txUf3mE"
+      },
+      "source": [
+        "import requests \n",
+        "from bs4 import BeautifulSoup\n",
+        "import smtplib\n",
+        "import time "
+      ],
+      "execution_count": 66,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "v2Jmawq9f9nQ"
+      },
+      "source": [
+        "url = 'https://www.amazon.co.uk/dp/B083NR8Z4V/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B083NR8Z4V&pd_rd_w=WpBtd&pf_rd_p=1055d8b2-c10c-4d7d-b50d-96300553e15d&pd_rd_wg=aOmvR&pf_rd_r=AKXSVQQ3Q3ZFJ389VD6W&pd_rd_r=e9487063-0c01-4861-8ef1-28b9b7aedf6c&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExVUJESVk5U0lWMk5RJmVuY3J5cHRlZElkPUExMDQyOTMwODdSUkJLUTgyQURMJmVuY3J5cHRlZEFkSWQ9QTA0NDgwMDFGU1RNTkxWQkswRFomd2lkZ2V0TmFtZT1zcF9kZXRhaWwmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl'"
+      ],
+      "execution_count": 33,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "D-xEfbBAgI_l"
+      },
+      "source": [
+        "headers = {'User-Agent': \"Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36\"}"
+      ],
+      "execution_count": 34,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "GjFwCwoRgRje"
+      },
+      "source": [
+        "def check_price():\n",
+        "  page = requests.get(url, headers=headers)\n",
+        "  soup = BeautifulSoup(page.content, 'html.parser')\n",
+        "  title = soup.find(id='productTitle').get_text()\n",
+        "  price = soup.find(id=\"priceblock_ourprice\").get_text()\n",
+        "  converted_price = float(price[1:6])\n",
+        "\n",
+        "  if (converted_price < 79.00):\n",
+        "    send_email()\n"
+      ],
+      "execution_count": 69,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "DE4Rnop1hmoE"
+      },
+      "source": [
+        "def send_email():\n",
+        "  server = smtplib.SMTP('smtp.gmail.com', 587)\n",
+        "  server.ehlo()\n",
+        "  server.starttls()\n",
+        "  server.ehlo()\n",
+        "\n",
+        "  server.login('#Enter your username here', '#Enter your password here')\n",
+        "\n",
+        "  subject = 'Price Dropped For Podcast Microphone!!!'\n",
+        "  body = \"check amazon link - https://www.amazon.co.uk/dp/B083NR8Z4V/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B083NR8Z4V&pd_rd_w=WpBtd&pf_rd_p=1055d8b2-c10c-4d7d-b50d-96300553e15d&pd_rd_wg=aOmvR&pf_rd_r=AKXSVQQ3Q3ZFJ389VD6W&pd_rd_r=e9487063-0c01-4861-8ef1-28b9b7aedf6c&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExVUJESVk5U0lWMk5RJmVuY3J5cHRlZElkPUExMDQyOTMwODdSUkJLUTgyQURMJmVuY3J5cHRlZEFkSWQ9QTA0NDgwMDFGU1RNTkxWQkswRFomd2lkZ2V0TmFtZT1zcF9kZXRhaWwmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl\"\n",
+        "\n",
+        "  msg = f\"subject: {subject}\\n\\n{body}\"\n",
+        "\n",
+        "  server.sendmail(\n",
+        "      '#email address from',\n",
+        "      \"#email address too\",\n",
+        "      msg\n",
+        "  )\n",
+        "\n",
+        "  print(\"Hey, Email has been sent!!\")\n",
+        "\n",
+        "  server.quit()\n"
+      ],
+      "execution_count": 64,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "iTJ8Ay7jknL9"
+      },
+      "source": [
+        "while(True):\n",
+        "  check_price()\n",
+        "  time.sleep(86400)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
