@@ -1,0 +1,1 @@
+# BlackFriday_pythonScrapper
